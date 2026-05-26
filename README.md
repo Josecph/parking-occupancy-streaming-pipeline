@@ -2,7 +2,7 @@ Para ativar o ambiente virtual:
 .\venv\Scripts\activate
 
 Para aceder à consola do minio é necessário criar um túnel, uma vez que estou a correr o minikube dentro do docker/WSL2 no windows, através de:
-minikube service minio-service
+minikube service minio-service.
 
 kubectl port-forward svc/spark-master 8080:8080, para aceder ao spark master
 kubectl exec -it spark-master-598dc88755-5hxkc -- /opt/spark/bin/spark-submit `
