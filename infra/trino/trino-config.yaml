@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trino-config
+data:
+  config.properties: |
+    coordinator=true
+    node-scheduler.include-coordinator=true
+    http-server.http.port=8080
+    query.max-memory=1GB
+    query.max-memory-per-node=512MB
+    discovery-server.enabled=true
+    discovery.uri=http://localhost:8080
+
+  node.properties: |
+    node.environment=dev
+    node.id=trino-1
+    node.data-dir=/data/trino
+
+  jvm.config: |
+    -Xmx1G
+
+  hive.properties: |
+    connector.name=hive
+    hive.metastore=file
+    hive.metastore.catalog.dir=s3a://processed/
+    hive.s3.endpoint=http://minio-deployment:9000
+    hive.s3.aws-access-key=minioadmin
+    hive.s3.aws-secret-key=minioadmin
+    hive.s3.path-style-access=true
+    hive.s3.ssl.enabled=false

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-master
+  template:
+    metadata:
+      labels:
+        app: spark-master
+    spec:
+      containers:
+      - name: spark-master
+        image: spark-image:latest
+        imagePullPolicy: Never
+        command: ["/opt/spark/bin/spark-class"]
+        args:
+        # CORREÇÃO AQUI: Definir o host como 0.0.0.0 para garantir o bind correto DENTRO do Pod
+        - org.apache.spark.deploy.master.Master
+        - --host
+        - "0.0.0.0"  # <--- ALTERAÇÃO CHAVE: Usar 0.0.0.0 para resolver o BindException
+        - --port
+        - "7077"
+        ports:
+        - containerPort: 7077
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-master
+spec:
+  selector:
+    app: spark-master
+  ports:
+  - name: spark
+    port: 7077
+  - name: webui
+    port: 8080
+  type: ClusterIP

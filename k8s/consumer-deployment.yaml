@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+      - name: consumer
+        image: consumer-image:latest
+        imagePullPolicy: Never
+        env:
+        - name: KAFKA_BOOTSTRAP
+          value: "kafka:9092"
+        - name: TOPIC_NAME
+          value: "ocupacao-parques"
+        - name: MINIO_ENDPOINT
+          value: "http://minio-service:9000"
+        - name: MINIO_ACCESS
+          value: "admin"
+        - name: MINIO_SECRET
+          value: "admin123"
+        - name: MINIO_BUCKET
+          value: "raw-ingest"

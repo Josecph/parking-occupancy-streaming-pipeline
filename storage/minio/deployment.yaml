@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka
+          # IMAGEM: Bitnami (mais estável)
+          image: bitnami/kafka:3.5.1
+          ports:
+            - containerPort: 9092
+          env:
+            # Permite a comunicação não-encriptada
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+
+            # Conexão ao Zookeeper (zookeeper:2181)
+            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+              value: "zookeeper:2181"
+
+            # ID do Broker
+            - name: KAFKA_CFG_BROKER_ID
+              value: "1"
+
+            # Listener Anunciado (necessário para comunicação externa via Service name 'kafka')
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://kafka:9092"
+
+            # Listener local
+            - name: KAFKA_CFG_LISTENERS
+              value: "PLAINTEXT://:9092"
+          
+          volumeMounts:
+            # Caminho de montagem padrão Bitnami
+            - name: kafka-storage
+              mountPath: /bitnami/kafka/data
+
+      volumes:
+        - name: kafka-storage
+          emptyDir: {}

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trino
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trino
+  template:
+    metadata:
+      labels:
+        app: trino
+    spec:
+      containers:
+        - name: trino
+          image: trinodb/trino:435
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: trino-config
+              mountPath: /etc/trino/config.properties
+              subPath: config.properties
+
+            - name: trino-config
+              mountPath: /etc/trino/node.properties
+              subPath: node.properties
+
+            - name: trino-config
+              mountPath: /etc/trino/jvm.config
+              subPath: jvm.config
+
+            - name: trino-config
+              mountPath: /etc/trino/catalog/hive.properties
+              subPath: hive.properties
+      volumes:
+        - name: trino-config
+          configMap:
+            name: trino-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trino
+spec:
+  selector:
+    app: trino
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
